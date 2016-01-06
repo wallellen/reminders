@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.wallellen.android.reminders.db.RemindersDbAdapter;
 
@@ -53,6 +55,13 @@ public class RemindersActivity extends AppCompatActivity {
         mCursorAdapter = new ReminderSimpleCursorAdapter(RemindersActivity.this, R.layout.reminders_row, cursor, from, to, 0);
 
         mListView.setAdapter(mCursorAdapter);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(RemindersActivity.this, "Clicked " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initData(Bundle savedInstanceState) {
