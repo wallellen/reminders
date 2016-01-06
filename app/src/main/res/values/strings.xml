@@ -5,4 +5,8 @@
     <string name="new_reminder">new Reminder</string>
     <string name="exit">Exit</string>
     <string name="menu_delete">delete Reminder</string>
+    <string name="new_reminder_">New Reminder:</string>
+    <string name="_important">Important</string>
+    <string name="_cancel">Cancel</string>
+    <string name="_commit">Commit</string>
 </resources>
