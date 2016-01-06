@@ -4,4 +4,5 @@
     <string name="hello">Reminder Text</string>
     <string name="new_reminder">new Reminder</string>
     <string name="exit">Exit</string>
+    <string name="menu_delete">delete Reminder</string>
 </resources>
