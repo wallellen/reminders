@@ -219,6 +219,9 @@ public class RemindersActivity extends AppCompatActivity {
                 Log.d(getLocalClassName(), "Create new Reminder");
                 fireCustomDialog(null);
                 return true;
+            case R.id.action_about:
+                fireAboutDialog();
+                return true;
             case R.id.action_exit:
                 finish();
                 Log.d(getLocalClassName(), "Exit");
@@ -226,6 +229,13 @@ public class RemindersActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void fireAboutDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_about);
+        dialog.show();
     }
 
     private void fireCustomDialog(final Reminder reminder) {

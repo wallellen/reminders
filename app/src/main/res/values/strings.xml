@@ -9,4 +9,7 @@
     <string name="_important">Important</string>
     <string name="_cancel">Cancel</string>
     <string name="_commit">Commit</string>
+    <string name="_reminders_title">Reminders!</string>
+    <string name="_about_detail">Version 1.0\nAll right reserved\nDevelop by WALLELLEN</string>
+    <string name="about">About</string>
 </resources>
