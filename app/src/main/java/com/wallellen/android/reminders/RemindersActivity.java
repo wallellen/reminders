@@ -2,6 +2,7 @@ package com.wallellen.android.reminders;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +26,8 @@ import android.widget.TextView;
 
 import com.wallellen.android.reminders.db.RemindersDbAdapter;
 import com.wallellen.android.reminders.model.Reminder;
+
+import java.util.Date;
 
 public class RemindersActivity extends AppCompatActivity {
 
@@ -122,7 +125,7 @@ public class RemindersActivity extends AppCompatActivity {
 //                Toast.makeText(RemindersActivity.this, "Clicked " + position, Toast.LENGTH_SHORT).show();
                 AlertDialog.Builder builder = new AlertDialog.Builder(RemindersActivity.this);
                 ListView modeListView = new ListView(RemindersActivity.this);
-                String[] modes = new String[]{"Edit Reminder", "Delete Reminder"};
+                String[] modes = new String[]{"Edit Reminder", "Delete Reminder", "Schedule Reminder"};
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RemindersActivity.this, R.layout.reminders_row, R.id.row_text, modes);
                 modeListView.setAdapter(arrayAdapter);
                 builder.setView(modeListView);
@@ -142,9 +145,12 @@ public class RemindersActivity extends AppCompatActivity {
                             int nId = getIdFromPosition(masterListPosition);
                             Reminder reminder = mDbAdapter.fetchReminderById(nId);
                             fireCustomDialog(reminder);
-                        } else {
+                        } else if(position == 1){
                             mDbAdapter.deleteReminderById(getIdFromPosition(masterListPosition));
                             mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+                        } else {
+                            Date date = new Date();
+                            new TimePickerDialog(RemindersActivity.this, null, date.getHours(), date.getMinutes(), true).show();
                         }
 
                         dialog.dismiss();
