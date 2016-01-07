@@ -6,21 +6,25 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.wallellen.android.reminders.db.RemindersDbAdapter;
+import com.wallellen.android.reminders.model.Reminder;
 
 public class RemindersActivity extends AppCompatActivity {
 
@@ -32,8 +36,14 @@ public class RemindersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminders);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ActionBar bar = getSupportActionBar();
+        bar.setHomeButtonEnabled(true);
+        bar.setDisplayShowHomeEnabled(true);
+        bar.setIcon(R.mipmap.ic_launcher);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -62,77 +72,86 @@ public class RemindersActivity extends AppCompatActivity {
 
         mListView.setAdapter(mCursorAdapter);
 
-        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-
-            }
-
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.cam_menu, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.menu_item_delete_reminder:
-                        for (int c = mCursorAdapter.getCount() - 1; c >= 0; c--) {
-                            if (mListView.isItemChecked(c)) {
-                                mDbAdapter.deleteReminderById((int) mCursorAdapter.getItemId(c));
-                            }
-                        }
-
-                        mode.finish();
-                        mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
-                        return true;
-                }
-
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-
-            }
-        });
-
-
-//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+//        mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 //            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
-////                Toast.makeText(RemindersActivity.this, "Clicked " + position, Toast.LENGTH_SHORT).show();
-//                AlertDialog.Builder builder = new AlertDialog.Builder(RemindersActivity.this);
-//                ListView modeListView = new ListView(RemindersActivity.this);
-//                String[] modes = new String[]{"Edit Reminder", "Delete Reminder"};
-//                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RemindersActivity.this, R.layout.reminders_row, R.id.row_text, modes);
-//                modeListView.setAdapter(arrayAdapter);
-//                builder.setView(modeListView);
-//                final Dialog dialog = builder.create();
-//                dialog.show();
+//            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 //
-//                modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            }
+//
+//            @Override
+//            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+//                MenuInflater inflater = mode.getMenuInflater();
+//                inflater.inflate(R.menu.cam_menu, menu);
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+//                switch (item.getItemId()) {
+//                    case R.id.menu_item_delete_reminder:
+//                        for (int c = mCursorAdapter.getCount() - 1; c >= 0; c--) {
+//                            if (mListView.isItemChecked(c)) {
+//                                mDbAdapter.deleteReminderById((int) mCursorAdapter.getItemId(c));
+//                            }
+//                        }
+//
+//                        mode.finish();
+//                        mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+//                        return true;
+//                }
+//
+//                return false;
+//            }
+//
+//            @Override
+//            public void onDestroyActionMode(ActionMode mode) {
+//
+//            }
+//        });
+
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
+//                Toast.makeText(RemindersActivity.this, "Clicked " + position, Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(RemindersActivity.this);
+                ListView modeListView = new ListView(RemindersActivity.this);
+                String[] modes = new String[]{"Edit Reminder", "Delete Reminder"};
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(RemindersActivity.this, R.layout.reminders_row, R.id.row_text, modes);
+                modeListView.setAdapter(arrayAdapter);
+                builder.setView(modeListView);
+                final Dialog dialog = builder.create();
+                dialog.show();
+
+                modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                        if (position == 0) {
 //                            Toast.makeText(parent.getContext(), "edit " + masterListPosition, Toast.LENGTH_SHORT).show();
 //                        } else {
 //                            Toast.makeText(parent.getContext(), "delete " + masterListPosition, Toast.LENGTH_SHORT).show();
 //                        }
-//
-//                        dialog.dismiss();
-//                    }
-//                });
-//            }
-//        });
+
+                        if (position == 0) {
+                            int nId = getIdFromPosition(masterListPosition);
+                            Reminder reminder = mDbAdapter.fetchReminderById(nId);
+                            fireCustomDialog(reminder);
+                        } else {
+                            mDbAdapter.deleteReminderById(getIdFromPosition(masterListPosition));
+                            mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+                        }
+
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
     }
 
     private void initData(Bundle savedInstanceState) {
@@ -181,6 +200,7 @@ public class RemindersActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_new:
                 Log.d(getLocalClassName(), "Create new Reminder");
+                fireCustomDialog(null);
                 return true;
             case R.id.action_exit:
                 finish();
@@ -191,4 +211,67 @@ public class RemindersActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void fireCustomDialog(final Reminder reminder) {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_custom);
+
+        TextView textView = (TextView) dialog.findViewById(R.id.custom_title);
+        final EditText editText = (EditText) dialog.findViewById(R.id.custom_edit_reminder);
+        Button commitButtom = (Button) dialog.findViewById(R.id.custom_button_commit);
+        final CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.custom_check_box);
+        LinearLayout rootLayout = (LinearLayout) dialog.findViewById(R.id.custom_root_layout);
+        final boolean isEditOption = reminder != null;
+
+        if (isEditOption) {
+            textView.setText("Edit Reminder");
+            checkBox.setChecked(reminder.getmImportant() == 1);
+            editText.setText(reminder.getmContent());
+            rootLayout.setBackgroundColor(getResources().getColor(R.color.blue));
+        }
+
+        commitButtom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = editText.getText().toString();
+                boolean important = checkBox.isChecked();
+
+                if (isEditOption) {
+                    Reminder reminder1 = new Reminder(reminder.getmId(), text, important ? 1 : 0);
+                    mDbAdapter.updateReminder(reminder1);
+                } else {
+                    mDbAdapter.createReminder(text, important);
+                }
+
+                mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+                dialog.dismiss();
+            }
+        });
+
+        dialog.findViewById(R.id.custom_button_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (position == 0) {
+            int nId = getIdFromPosition(position);
+            Reminder reminder = mDbAdapter.fetchReminderById(nId);
+            fireCustomDialog(reminder);
+        } else {
+            mDbAdapter.deleteReminderById(getIdFromPosition(position));
+            mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+        }
+
+
+    }
+
+    private int getIdFromPosition(int position) {
+        return (int) mCursorAdapter.getItemId(position);
+    }
 }
