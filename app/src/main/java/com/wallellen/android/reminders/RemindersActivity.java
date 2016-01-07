@@ -1,8 +1,12 @@
 package com.wallellen.android.reminders;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +27,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.wallellen.android.reminders.db.RemindersDbAdapter;
 import com.wallellen.android.reminders.model.Reminder;
@@ -141,16 +146,22 @@ public class RemindersActivity extends AppCompatActivity {
 //                            Toast.makeText(parent.getContext(), "delete " + masterListPosition, Toast.LENGTH_SHORT).show();
 //                        }
 
+                        int nId = getIdFromPosition(masterListPosition);
+                        final Reminder reminder = mDbAdapter.fetchReminderById(nId);
                         if (position == 0) {
-                            int nId = getIdFromPosition(masterListPosition);
-                            Reminder reminder = mDbAdapter.fetchReminderById(nId);
                             fireCustomDialog(reminder);
-                        } else if(position == 1){
+                        } else if (position == 1) {
                             mDbAdapter.deleteReminderById(getIdFromPosition(masterListPosition));
                             mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
                         } else {
-                            Date date = new Date();
-                            new TimePickerDialog(RemindersActivity.this, null, date.getHours(), date.getMinutes(), true).show();
+                            final Date date = new Date();
+                            new TimePickerDialog(RemindersActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                    Date alarm = new Date(date.getYear(), date.getMonth(), date.getDay(), hourOfDay, minute);
+                                    scheduleReminder(alarm.getTime(), reminder.getmContent());
+                                }
+                            }, date.getHours(), date.getMinutes(), true).show();
                         }
 
                         dialog.dismiss();
@@ -264,20 +275,16 @@ public class RemindersActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (position == 0) {
-            int nId = getIdFromPosition(position);
-            Reminder reminder = mDbAdapter.fetchReminderById(nId);
-            fireCustomDialog(reminder);
-        } else {
-            mDbAdapter.deleteReminderById(getIdFromPosition(position));
-            mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
-        }
-
-
-    }
-
     private int getIdFromPosition(int position) {
         return (int) mCursorAdapter.getItemId(position);
+    }
+
+
+    private void scheduleReminder(long time, String content) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent(this, RemindersActivity.class);
+        alarmIntent.putExtra(ReminderAlarmReceiver.REMINDER_EXIT, content);
+        PendingIntent broadcast = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, broadcast);
     }
 }
