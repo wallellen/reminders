@@ -293,7 +293,7 @@ public class RemindersActivity extends AppCompatActivity {
     private void scheduleReminder(long time, String content) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent alarmIntent = new Intent(this, RemindersActivity.class);
-        alarmIntent.putExtra(ReminderAlarmReceiver.REMINDER_EXIT, content);
+        alarmIntent.putExtra(ReminderAlarmReceiver.REMINDER_TEXT, content);
         PendingIntent broadcast = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
         alarmManager.set(AlarmManager.RTC_WAKEUP, time, broadcast);
     }
