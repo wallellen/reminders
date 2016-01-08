@@ -161,7 +161,7 @@ public class RemindersActivity extends AppCompatActivity {
                                     Date alarm = new Date(date.getYear(), date.getMonth(), date.getDay(), hourOfDay, minute);
                                     scheduleReminder(alarm.getTime(), reminder.getmContent());
                                 }
-                            }, date.getHours(), date.getMinutes(), true).show();
+                            }, date.getHours(), date.getMinutes(), false).show();
                         }
 
                         dialog.dismiss();
